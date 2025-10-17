@@ -20,8 +20,8 @@ RSpec.describe "Authentication System", type: :system do
     expect(current_path).to eq(dashboard_path)
     expect(page).to have_content("user@example.com")
 
-    # 登出
-    find("input[type='submit'][value='登出']").click
+    # 登出（點擊第一個登出按鈕，即桌面版）
+    first(:button, "登出").click
 
     # 確認登出成功
     expect(current_path).to eq(new_session_path)

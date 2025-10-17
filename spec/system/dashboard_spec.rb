@@ -60,6 +60,7 @@ RSpec.describe "Dashboard", type: :system do
         expect(page).to have_content("新增公司")
 
         fill_in "公司名稱", with: "新創公司"
+        fill_in "統一編號", with: "10458575"
         fill_in "公司簡介", with: "這是一家新創公司"
         click_button "建立公司"
 

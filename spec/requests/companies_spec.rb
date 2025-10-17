@@ -71,6 +71,7 @@ RSpec.describe "Companies", type: :request do
         {
           company: {
             name: "新公司",
+            tax_id: "10458575",  # 有效的台灣統一編號
             description: "這是一家新公司"
           }
         }
