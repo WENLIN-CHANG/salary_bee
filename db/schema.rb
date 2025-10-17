@@ -20,7 +20,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_29_054352) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "tax_id", limit: 8, null: false
-    t.index [ "tax_id" ], name: "index_companies_on_tax_id", unique: true
+    t.index ["tax_id"], name: "index_companies_on_tax_id", unique: true
   end
 
   create_table "insurances", force: :cascade do |t|
@@ -37,10 +37,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_29_054352) do
     t.date "expiry_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index [ "grade_level" ], name: "index_insurances_on_grade_level"
-    t.index [ "insurance_type", "effective_date", "expiry_date" ], name: "index_insurances_on_type_and_dates"
-    t.index [ "insurance_type" ], name: "index_insurances_on_insurance_type"
-    t.index [ "salary_min", "salary_max" ], name: "index_insurances_on_salary_range"
+    t.index ["grade_level"], name: "index_insurances_on_grade_level"
+    t.index ["insurance_type", "effective_date", "expiry_date"], name: "index_insurances_on_type_and_dates"
+    t.index ["insurance_type"], name: "index_insurances_on_insurance_type"
+    t.index ["salary_min", "salary_max"], name: "index_insurances_on_salary_range"
   end
 
   create_table "sessions", force: :cascade do |t|
@@ -49,7 +49,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_29_054352) do
     t.string "user_agent"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index [ "user_id" ], name: "index_sessions_on_user_id"
+    t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 
   create_table "user_companies", force: :cascade do |t|
@@ -57,9 +57,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_29_054352) do
     t.bigint "company_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index [ "company_id" ], name: "index_user_companies_on_company_id"
-    t.index [ "user_id", "company_id" ], name: "index_user_companies_on_user_id_and_company_id", unique: true
-    t.index [ "user_id" ], name: "index_user_companies_on_user_id"
+    t.index ["company_id"], name: "index_user_companies_on_company_id"
+    t.index ["user_id", "company_id"], name: "index_user_companies_on_user_id_and_company_id", unique: true
+    t.index ["user_id"], name: "index_user_companies_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -67,7 +67,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_29_054352) do
     t.string "password_digest", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index [ "email_address" ], name: "index_users_on_email_address", unique: true
+    t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
   add_foreign_key "sessions", "users"
