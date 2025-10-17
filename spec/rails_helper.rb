@@ -46,6 +46,12 @@ RSpec.configure do |config|
   # ActiveJob 測試幫助方法
   config.include ActiveJob::TestHelper
 
+  # Time traveling helper
+  config.include ActiveSupport::Testing::TimeHelpers
+
+  # File upload helper for request specs
+  config.include ActionDispatch::TestProcess::FixtureFile
+
   # 在測試執行前載入所有 factories
   config.before(:suite) do
     FactoryBot.find_definitions
@@ -92,4 +98,12 @@ RSpec.configure do |config|
   config.filter_rails_from_backtrace!
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
+end
+
+# Shoulda Matchers 設定
+Shoulda::Matchers.configure do |config|
+  config.integrate do |with|
+    with.test_framework :rspec
+    with.library :rails
+  end
 end

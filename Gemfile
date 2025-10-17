@@ -37,10 +37,16 @@ gem "bcrypt", "~> 3.1.7"       # 密碼加密 (has_secure_password)
 gem "pundit"                    # 授權管理框架
 gem "aasm"                      # 狀態機管理
 
+# ===== 分頁與檔案處理 =====
+# gem "pagy", "~> 9.0"            # 分頁功能（先註解，等測試跑起來再加）
+gem "roo", ">= 2.10"            # Excel 讀取（支援 3.0+）
+gem "rubyXL", "~> 3.4"          # Excel 寫入
+
 group :development, :test do
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
   gem "rspec-rails", "~> 8.0"     # RSpec 測試框架
   gem "factory_bot", "~> 6.5"     # 測試資料產生器
+  gem "shoulda-matchers", "~> 6.0" # RSpec matchers for Rails validations
   gem "rails-controller-testing"  # Controller 測試支援
   gem "capybara"                   # System 測試支援
   gem "brakeman", require: false  # 安全漏洞靜態分析

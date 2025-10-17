@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_29_054352) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_29_090000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -21,6 +21,30 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_29_054352) do
     t.datetime "updated_at", null: false
     t.string "tax_id", limit: 8, null: false
     t.index ["tax_id"], name: "index_companies_on_tax_id", unique: true
+  end
+
+  create_table "employees", force: :cascade do |t|
+    t.bigint "company_id", null: false
+    t.string "employee_id", null: false
+    t.string "name", null: false
+    t.string "id_number"
+    t.string "email"
+    t.string "phone"
+    t.date "birth_date"
+    t.date "hire_date", null: false
+    t.date "resign_date"
+    t.string "department"
+    t.string "position"
+    t.decimal "base_salary", precision: 10, scale: 2, default: "0.0", null: false
+    t.json "allowances", default: {}
+    t.json "deductions", default: {}
+    t.string "labor_insurance_group"
+    t.string "health_insurance_group"
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["company_id", "employee_id"], name: "index_employees_on_company_id_and_employee_id", unique: true
+    t.index ["company_id"], name: "index_employees_on_company_id"
   end
 
   create_table "insurances", force: :cascade do |t|
@@ -70,6 +94,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_29_054352) do
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
+  add_foreign_key "employees", "companies"
   add_foreign_key "sessions", "users"
   add_foreign_key "user_companies", "companies"
   add_foreign_key "user_companies", "users"

@@ -1,0 +1,146 @@
+<div class="min-h-screen bg-gradient-to-br from-yellow-100 to-yellow-200 p-4">
+  <div class="max-w-7xl mx-auto">
+
+    <div class="brutalist-card p-6 mb-8">
+      <div class="flex justify-between items-center mb-6">
+        <h1 class="text-4xl font-black text-black brutalist-tilt-minus-1">
+          員工管理
+        </h1>
+        <div class="flex space-x-3">
+          <%= link_to "匯入員工", bulk_import_company_employees_path(@company),
+              class: "brutalist-button-secondary py-3 px-4" %>
+          <%= link_to "新增員工", new_company_employee_path(@company),
+              class: "brutalist-button-primary py-3 px-6 text-lg" %>
+        </div>
+      </div>
+
+      <!-- 搜尋與篩選 -->
+      <div class="bg-white border-4 border-black p-4 neubrutalist-shadow mb-6">
+        <%= form_with url: company_employees_path(@company), method: :get, local: true, class: "space-y-4" do |f| %>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- 姓名搜尋 -->
+            <div>
+              <%= f.label :search, "搜尋姓名", class: "block text-black font-bold mb-2" %>
+              <%= f.text_field :search,
+                  value: params[:search],
+                  placeholder: "輸入員工姓名...",
+                  class: "brutalist-input w-full px-4 py-2" %>
+            </div>
+
+            <!-- 部門篩選 -->
+            <div>
+              <%= f.label :department, "部門篩選", class: "block text-black font-bold mb-2" %>
+              <%= f.select :department,
+                  options_for_select(
+                    [["全部部門", ""], ["工程部", "工程部"], ["業務部", "業務部"], ["人資部", "人資部"], ["財務部", "財務部"]],
+                    params[:department]
+                  ),
+                  {},
+                  class: "brutalist-input w-full px-4 py-2" %>
+            </div>
+
+            <!-- 顯示離職員工 -->
+            <div>
+              <%= f.label :show_all, class: "block text-black font-bold mb-2" do %>
+                <%= f.check_box :show_all, { checked: params[:show_all] == "1" }, "1", "0" %>
+                顯示離職員工
+              <% end %>
+            </div>
+          </div>
+
+          <div class="flex space-x-3">
+            <%= f.submit "搜尋", class: "brutalist-button-primary py-2 px-6" %>
+            <%= link_to "重置", company_employees_path(@company),
+                class: "brutalist-button-secondary py-2 px-6" %>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- 匯出按鈕 -->
+      <div class="mb-4 flex space-x-3">
+        <%= link_to "匯出 CSV", company_employees_path(@company, format: :csv, search: params[:search], department: params[:department], show_all: params[:show_all]),
+            class: "brutalist-button-secondary py-2 px-4" %>
+        <%= link_to "匯出 Excel", company_employees_path(@company, format: :xlsx, search: params[:search], department: params[:department], show_all: params[:show_all]),
+            class: "brutalist-button-secondary py-2 px-4" %>
+      </div>
+
+      <!-- 員工列表 -->
+      <% if @employees.any? %>
+        <div class="bg-white border-4 border-black neubrutalist-shadow overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="bg-yellow-400 border-b-4 border-black">
+                <th class="px-4 py-3 text-left font-black text-black">員工編號</th>
+                <th class="px-4 py-3 text-left font-black text-black">姓名</th>
+                <th class="px-4 py-3 text-left font-black text-black">部門</th>
+                <th class="px-4 py-3 text-left font-black text-black">職位</th>
+                <th class="px-4 py-3 text-left font-black text-black">到職日期</th>
+                <th class="px-4 py-3 text-left font-black text-black">狀態</th>
+                <th class="px-4 py-3 text-left font-black text-black">操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @employees.each_with_index do |employee, index| %>
+                <tr class="border-b-2 border-black <%= 'bg-gray-100' if index.even? %>">
+                  <td class="px-4 py-3 font-bold text-black"><%= employee.employee_id %></td>
+                  <td class="px-4 py-3 font-bold text-black"><%= employee.name %></td>
+                  <td class="px-4 py-3 font-medium text-black"><%= employee.department %></td>
+                  <td class="px-4 py-3 font-medium text-black"><%= employee.position %></td>
+                  <td class="px-4 py-3 font-medium text-black"><%= employee.hire_date.strftime("%Y-%m-%d") %></td>
+                  <td class="px-4 py-3">
+                    <% if employee.active? %>
+                      <span class="inline-block bg-green-500 border-2 border-black px-3 py-1 font-bold text-white text-xs">
+                        在職
+                      </span>
+                    <% else %>
+                      <span class="inline-block bg-gray-500 border-2 border-black px-3 py-1 font-bold text-white text-xs">
+                        離職
+                      </span>
+                    <% end %>
+                  </td>
+                  <td class="px-4 py-3">
+                    <div class="flex space-x-2">
+                      <%= link_to "查看", company_employee_path(@company, employee),
+                          class: "text-blue-600 font-bold hover:underline text-sm" %>
+                      <%= link_to "編輯", edit_company_employee_path(@company, employee),
+                          class: "text-green-600 font-bold hover:underline text-sm" %>
+                      <% if employee.active? %>
+                        <%= link_to "離職", company_employee_path(@company, employee),
+                            data: { turbo_method: :delete, turbo_confirm: "確定要將 #{employee.name} 設為離職狀態嗎？" },
+                            class: "text-red-600 font-bold hover:underline text-sm" %>
+                      <% else %>
+                        <%= link_to "重新啟用", activate_company_employee_path(@company, employee),
+                            data: { turbo_method: :patch },
+                            class: "text-purple-600 font-bold hover:underline text-sm" %>
+                      <% end %>
+                    </div>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="mt-4 text-black font-bold">
+          共 <%= @employees.count %> 位員工
+        </div>
+      <% else %>
+        <div class="bg-yellow-400 border-4 border-black p-8 neubrutalist-shadow brutalist-tilt-2 text-center">
+          <h3 class="text-2xl font-black text-black mb-4">
+            尚無員工資料
+          </h3>
+          <p class="font-bold text-black mb-4">
+            立即新增您的第一位員工！
+          </p>
+          <%= link_to "新增員工", new_company_employee_path(@company),
+              class: "brutalist-button-primary inline-block py-3 px-6 text-lg" %>
+        </div>
+      <% end %>
+
+      <div class="mt-6">
+        <%= link_to "返回公司列表", companies_path,
+            class: "brutalist-button-secondary py-2 px-6" %>
+      </div>
+    </div>
+  </div>
+</div>

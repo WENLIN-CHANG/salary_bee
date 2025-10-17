@@ -1,0 +1,192 @@
+<div class="min-h-screen bg-gradient-to-br from-yellow-100 to-yellow-200 p-4">
+  <div class="max-w-4xl mx-auto">
+
+    <div class="brutalist-card p-8 mb-8">
+      <div class="flex justify-between items-start mb-6">
+        <div>
+          <h1 class="text-4xl font-black text-black mb-2 brutalist-tilt-minus-1">
+            <%= @employee.name %>
+          </h1>
+          <p class="text-lg font-bold text-black mb-1">
+            員工編號：<%= @employee.employee_id %>
+          </p>
+          <p class="text-lg font-medium text-black">
+            <% if @employee.active? %>
+              <span class="inline-block bg-green-500 border-2 border-black px-3 py-1 font-bold text-white text-sm">
+                在職中
+              </span>
+            <% else %>
+              <span class="inline-block bg-gray-500 border-2 border-black px-3 py-1 font-bold text-white text-sm">
+                已離職
+              </span>
+            <% end %>
+          </p>
+        </div>
+
+        <div class="flex space-x-3">
+          <%= link_to "編輯", edit_company_employee_path(@company, @employee),
+              class: "brutalist-button-primary py-2 px-4" %>
+          <%= link_to "返回列表", company_employees_path(@company),
+              class: "brutalist-button-secondary py-2 px-4" %>
+        </div>
+      </div>
+
+      <!-- 基本資料 -->
+      <div class="bg-white border-4 border-black p-6 neubrutalist-shadow brutalist-tilt-1 mb-6">
+        <h2 class="text-xl font-bold text-black mb-4">基本資料</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <p class="font-bold text-black text-sm mb-1">姓名</p>
+            <p class="font-medium text-black"><%= @employee.name %></p>
+          </div>
+          <div>
+            <p class="font-bold text-black text-sm mb-1">身分證字號</p>
+            <p class="font-medium text-black"><%= @employee.id_number %></p>
+          </div>
+          <div>
+            <p class="font-bold text-black text-sm mb-1">Email</p>
+            <p class="font-medium text-black"><%= @employee.email || "未提供" %></p>
+          </div>
+          <div>
+            <p class="font-bold text-black text-sm mb-1">電話</p>
+            <p class="font-medium text-black"><%= @employee.phone || "未提供" %></p>
+          </div>
+          <div>
+            <p class="font-bold text-black text-sm mb-1">生日</p>
+            <p class="font-medium text-black"><%= @employee.birth_date&.strftime("%Y-%m-%d") || "未提供" %></p>
+          </div>
+          <div>
+            <p class="font-bold text-black text-sm mb-1">年齡</p>
+            <p class="font-medium text-black">
+              <%= @employee.birth_date ? ((Date.current - @employee.birth_date).to_i / 365) : "未知" %> 歲
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 職位資料 -->
+      <div class="bg-blue-100 border-4 border-black p-6 neubrutalist-shadow brutalist-tilt-minus-1 mb-6">
+        <h2 class="text-xl font-bold text-black mb-4">職位資料</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <p class="font-bold text-black text-sm mb-1">部門</p>
+            <p class="font-medium text-black"><%= @employee.department %></p>
+          </div>
+          <div>
+            <p class="font-bold text-black text-sm mb-1">職位</p>
+            <p class="font-medium text-black"><%= @employee.position %></p>
+          </div>
+          <div>
+            <p class="font-bold text-black text-sm mb-1">到職日期</p>
+            <p class="font-medium text-black"><%= @employee.hire_date.strftime("%Y-%m-%d") %></p>
+          </div>
+          <% if @employee.resign_date.present? %>
+            <div>
+              <p class="font-bold text-black text-sm mb-1">離職日期</p>
+              <p class="font-medium text-black"><%= @employee.resign_date.strftime("%Y-%m-%d") %></p>
+            </div>
+          <% end %>
+          <div>
+            <p class="font-bold text-black text-sm mb-1">年資</p>
+            <p class="font-medium text-black">
+              <%= ((Date.current - @employee.hire_date).to_i / 365.0).round(1) %> 年
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 薪資資訊 -->
+      <div class="bg-green-100 border-4 border-black p-6 neubrutalist-shadow brutalist-tilt-2 mb-6">
+        <h2 class="text-xl font-bold text-black mb-4">薪資資訊</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <p class="font-bold text-black text-sm mb-1">底薪</p>
+            <p class="font-medium text-black text-xl">NT$ <%= number_with_delimiter(@employee.base_salary) %></p>
+          </div>
+
+          <% if @employee.allowances.present? && @employee.allowances.any? %>
+            <div>
+              <p class="font-bold text-black text-sm mb-1">津貼</p>
+              <div class="space-y-1">
+                <% @employee.allowances.each do |key, value| %>
+                  <p class="font-medium text-black text-sm">
+                    <%= key %>: NT$ <%= number_with_delimiter(value) %>
+                  </p>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+
+          <% if @employee.deductions.present? && @employee.deductions.any? %>
+            <div>
+              <p class="font-bold text-black text-sm mb-1">扣款</p>
+              <div class="space-y-1">
+                <% @employee.deductions.each do |key, value| %>
+                  <p class="font-medium text-black text-sm">
+                    <%= key %>: NT$ <%= number_with_delimiter(value) %>
+                  </p>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+
+          <div>
+            <p class="font-bold text-black text-sm mb-1">毛薪</p>
+            <p class="font-medium text-black text-2xl font-black">
+              NT$ <%= number_with_delimiter(@employee.gross_salary) %>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 保險資訊 -->
+      <% if @employee.labor_insurance_group.present? || @employee.health_insurance_group.present? %>
+        <div class="bg-purple-100 border-4 border-black p-6 neubrutalism-shadow brutalist-tilt-minus-2 mb-6">
+          <h2 class="text-xl font-bold text-black mb-4">保險資訊</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <% if @employee.labor_insurance_group.present? %>
+              <div>
+                <p class="font-bold text-black text-sm mb-1">勞保級距</p>
+                <p class="font-medium text-black"><%= @employee.labor_insurance_group %></p>
+              </div>
+            <% end %>
+            <% if @employee.health_insurance_group.present? %>
+              <div>
+                <p class="font-bold text-black text-sm mb-1">健保級距</p>
+                <p class="font-medium text-black"><%= @employee.health_insurance_group %></p>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- 操作按鈕 -->
+      <div class="bg-yellow-400 border-4 border-black p-6 neubrutalist-shadow">
+        <h2 class="text-xl font-bold text-black mb-4">操作</h2>
+        <div class="flex flex-wrap gap-3">
+          <%= link_to "編輯員工資料", edit_company_employee_path(@company, @employee),
+              class: "brutalist-button-primary py-3 px-6" %>
+
+          <% if @employee.active? %>
+            <%= link_to "設為離職", company_employee_path(@company, @employee),
+                data: { turbo_method: :delete, turbo_confirm: "確定要將 #{@employee.name} 設為離職狀態嗎？" },
+                class: "bg-red-500 border-4 border-black text-white font-bold py-3 px-6 neubrutalist-shadow hover:neubrutalist-hover transition-all" %>
+          <% else %>
+            <%= link_to "重新啟用", activate_company_employee_path(@company, @employee),
+                data: { turbo_method: :patch },
+                class: "bg-purple-600 border-4 border-black text-white font-bold py-3 px-6 neubrutalist-shadow hover:neubrutalist-hover transition-all" %>
+          <% end %>
+
+          <%= link_to "返回員工列表", company_employees_path(@company),
+              class: "brutalist-button-secondary py-3 px-6" %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 背景裝飾 -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden">
+    <div class="absolute top-20 left-10 w-6 h-6 bg-red-500 border-4 border-black neubrutalist-shadow brutalist-tilt-1"></div>
+    <div class="absolute bottom-20 right-10 w-4 h-4 bg-orange-500 border-4 border-black neubrutalist-shadow brutalist-tilt-minus-2"></div>
+  </div>
+</div>

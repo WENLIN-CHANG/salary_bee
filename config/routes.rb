@@ -4,7 +4,20 @@ Rails.application.routes.draw do
   resources :users, only: [ :new, :create ]
 
   get "dashboard", to: "dashboard#index"
-  resources :companies
+
+  resources :companies do
+    resources :employees do
+      member do
+        patch :activate
+      end
+
+      collection do
+        get :bulk_import
+        post :bulk_import
+        get :download_template
+      end
+    end
+  end
 
   get "up" => "rails/health#show", as: :rails_health_check
 

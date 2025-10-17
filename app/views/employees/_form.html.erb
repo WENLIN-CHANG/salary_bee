@@ -1,0 +1,274 @@
+<!-- 錯誤訊息 -->
+<% if employee.errors.any? %>
+  <div class="brutalist-error p-4 mb-6">
+    <h3 class="font-bold mb-2">驗證錯誤：請修正以下問題</h3>
+    <ul class="list-disc list-inside">
+      <% employee.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= form_with model: employee, url: employee.persisted? ? company_employee_path(@company, employee) : company_employees_path(@company), local: true, class: "space-y-6" do |form| %>
+
+  <!-- 基本資料 -->
+  <div class="bg-white border-4 border-black p-6 neubrutalist-shadow">
+    <h3 class="text-xl font-bold text-black mb-4">基本資料</h3>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <%= form.label :employee_id, "員工編號", class: "block text-black font-bold mb-2" %>
+        <%= form.text_field :employee_id,
+            required: true,
+            placeholder: "例如：EMP0001",
+            class: "brutalist-input w-full px-4 py-3" %>
+      </div>
+
+      <div>
+        <%= form.label :name, "姓名", class: "block text-black font-bold mb-2" %>
+        <%= form.text_field :name,
+            required: true,
+            placeholder: "請輸入員工姓名",
+            class: "brutalist-input w-full px-4 py-3" %>
+      </div>
+
+      <div>
+        <%= form.label :id_number, "身分證字號", class: "block text-black font-bold mb-2" %>
+        <%= form.text_field :id_number,
+            required: true,
+            placeholder: "例如：A123456789",
+            maxlength: 10,
+            class: "brutalist-input w-full px-4 py-3" %>
+      </div>
+
+      <div>
+        <%= form.label :email, "Email", class: "block text-black font-bold mb-2" %>
+        <%= form.email_field :email,
+            placeholder: "employee@example.com",
+            class: "brutalist-input w-full px-4 py-3" %>
+      </div>
+
+      <div>
+        <%= form.label :phone, "電話", class: "block text-black font-bold mb-2" %>
+        <%= form.telephone_field :phone,
+            placeholder: "0912345678",
+            class: "brutalist-input w-full px-4 py-3" %>
+      </div>
+
+      <div>
+        <%= form.label :birth_date, "生日", class: "block text-black font-bold mb-2" %>
+        <%= form.date_field :birth_date,
+            class: "brutalist-input w-full px-4 py-3" %>
+      </div>
+    </div>
+  </div>
+
+  <!-- 職位資料 -->
+  <div class="bg-blue-100 border-4 border-black p-6 neubrutalist-shadow">
+    <h3 class="text-xl font-bold text-black mb-4">職位資料</h3>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <%= form.label :department, "部門", class: "block text-black font-bold mb-2" %>
+        <%= form.text_field :department,
+            required: true,
+            placeholder: "例如：工程部",
+            class: "brutalist-input w-full px-4 py-3" %>
+      </div>
+
+      <div>
+        <%= form.label :position, "職位", class: "block text-black font-bold mb-2" %>
+        <%= form.text_field :position,
+            required: true,
+            placeholder: "例如：工程師",
+            class: "brutalist-input w-full px-4 py-3" %>
+      </div>
+
+      <div>
+        <%= form.label :hire_date, "到職日期", class: "block text-black font-bold mb-2" %>
+        <%= form.date_field :hire_date,
+            required: true,
+            class: "brutalist-input w-full px-4 py-3" %>
+      </div>
+
+      <div>
+        <%= form.label :resign_date, "離職日期", class: "block text-black font-bold mb-2" %>
+        <%= form.date_field :resign_date,
+            class: "brutalist-input w-full px-4 py-3" %>
+        <div class="text-sm text-black mt-1 font-medium">
+          選填，離職時才需要填寫
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 薪資資料 -->
+  <div class="bg-green-100 border-4 border-black p-6 neubrutalist-shadow">
+    <h3 class="text-xl font-bold text-black mb-4">薪資資料</h3>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <%= form.label :base_salary, "底薪", class: "block text-black font-bold mb-2" %>
+        <%= form.number_field :base_salary,
+            required: true,
+            min: 0,
+            placeholder: "例如：40000",
+            class: "brutalist-input w-full px-4 py-3" %>
+      </div>
+
+      <div>
+        <%= form.label :labor_insurance_group, "勞保級距", class: "block text-black font-bold mb-2" %>
+        <%= form.number_field :labor_insurance_group,
+            placeholder: "選填",
+            class: "brutalist-input w-full px-4 py-3" %>
+      </div>
+
+      <div>
+        <%= form.label :health_insurance_group, "健保級距", class: "block text-black font-bold mb-2" %>
+        <%= form.number_field :health_insurance_group,
+            placeholder: "選填",
+            class: "brutalist-input w-full px-4 py-3" %>
+      </div>
+    </div>
+  </div>
+
+  <!-- 津貼與扣款 -->
+  <div class="bg-yellow-100 border-4 border-black p-6 neubrutalist-shadow" x-data="jsonFieldEditor()">
+    <h3 class="text-xl font-bold text-black mb-4">津貼與扣款</h3>
+
+    <!-- 津貼 -->
+    <div class="mb-6">
+      <label class="block text-black font-bold mb-3">津貼項目</label>
+
+      <template x-for="(item, index) in allowances" :key="index">
+        <div class="flex gap-2 mb-2">
+          <input type="text"
+                 x-model="item.key"
+                 placeholder="津貼名稱（例如：伙食津貼）"
+                 class="brutalist-input flex-1 px-4 py-2 text-sm" />
+          <input type="number"
+                 x-model="item.value"
+                 placeholder="金額"
+                 class="brutalist-input w-32 px-4 py-2 text-sm" />
+          <button type="button"
+                  @click="removeAllowance(index)"
+                  class="bg-red-500 border-2 border-black text-white font-bold px-4 py-2 text-sm neubrutalism-shadow hover:neubrutalism-hover">
+            移除
+          </button>
+        </div>
+      </template>
+
+      <button type="button"
+              @click="addAllowance()"
+              class="brutalist-button-secondary py-2 px-4 text-sm mt-2">
+        + 新增津貼
+      </button>
+
+      <!-- Hidden field for allowances -->
+      <%= form.hidden_field :allowances, "x-bind:value": "JSON.stringify(allowancesObject())" %>
+    </div>
+
+    <!-- 扣款 -->
+    <div>
+      <label class="block text-black font-bold mb-3">扣款項目</label>
+
+      <template x-for="(item, index) in deductions" :key="index">
+        <div class="flex gap-2 mb-2">
+          <input type="text"
+                 x-model="item.key"
+                 placeholder="扣款名稱（例如：遲到扣款）"
+                 class="brutalist-input flex-1 px-4 py-2 text-sm" />
+          <input type="number"
+                 x-model="item.value"
+                 placeholder="金額"
+                 class="brutalist-input w-32 px-4 py-2 text-sm" />
+          <button type="button"
+                  @click="removeDeduction(index)"
+                  class="bg-red-500 border-2 border-black text-white font-bold px-4 py-2 text-sm neubrutalism-shadow hover:neubrutalism-hover">
+            移除
+          </button>
+        </div>
+      </template>
+
+      <button type="button"
+              @click="addDeduction()"
+              class="brutalist-button-secondary py-2 px-4 text-sm mt-2">
+        + 新增扣款
+      </button>
+
+      <!-- Hidden field for deductions -->
+      <%= form.hidden_field :deductions, "x-bind:value": "JSON.stringify(deductionsObject())" %>
+    </div>
+
+    <div class="mt-4 text-sm text-black font-medium">
+      <p>💡 提示：津貼會增加薪資，扣款會減少薪資</p>
+    </div>
+  </div>
+
+  <!-- 提交按鈕 -->
+  <div class="pt-4 space-y-3">
+    <%= form.submit employee.persisted? ? "更新員工" : "建立員工",
+        class: "brutalist-button-primary w-full py-4 px-6 text-xl" %>
+
+    <%= link_to "取消", employee.persisted? ? company_employee_path(@company, employee) : company_employees_path(@company),
+        class: "brutalist-button-secondary block w-full py-3 px-6 text-center text-lg" %>
+  </div>
+
+<% end %>
+
+<!-- Alpine.js component for JSON field editing -->
+<script>
+function jsonFieldEditor() {
+  return {
+    allowances: <%= employee.allowances.present? ? employee.allowances.to_json : '[]' %>,
+    deductions: <%= employee.deductions.present? ? employee.deductions.to_json : '[]' %>,
+
+    init() {
+      // Convert object to array format if needed
+      if (typeof this.allowances === 'object' && !Array.isArray(this.allowances)) {
+        this.allowances = Object.entries(this.allowances).map(([key, value]) => ({key, value}));
+      }
+      if (typeof this.deductions === 'object' && !Array.isArray(this.deductions)) {
+        this.deductions = Object.entries(this.deductions).map(([key, value]) => ({key, value}));
+      }
+    },
+
+    addAllowance() {
+      this.allowances.push({ key: '', value: 0 });
+    },
+
+    removeAllowance(index) {
+      this.allowances.splice(index, 1);
+    },
+
+    addDeduction() {
+      this.deductions.push({ key: '', value: 0 });
+    },
+
+    removeDeduction(index) {
+      this.deductions.splice(index, 1);
+    },
+
+    allowancesObject() {
+      const obj = {};
+      this.allowances.forEach(item => {
+        if (item.key && item.key.trim() !== '') {
+          obj[item.key] = parseFloat(item.value) || 0;
+        }
+      });
+      return obj;
+    },
+
+    deductionsObject() {
+      const obj = {};
+      this.deductions.forEach(item => {
+        if (item.key && item.key.trim() !== '') {
+          obj[item.key] = parseFloat(item.value) || 0;
+        }
+      });
+      return obj;
+    }
+  }
+}
+</script>

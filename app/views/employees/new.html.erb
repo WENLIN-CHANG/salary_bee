@@ -1,0 +1,30 @@
+<div class="min-h-screen bg-gradient-to-br from-yellow-100 to-yellow-200 p-4">
+  <div class="max-w-4xl mx-auto">
+
+    <div class="brutalist-card p-8">
+      <div class="text-center mb-8">
+        <h1 class="text-4xl font-black text-black mb-2 brutalist-tilt-minus-1">
+          新增員工
+        </h1>
+        <p class="text-lg font-bold text-black">為 <%= @company.name %> 建立員工資料</p>
+      </div>
+
+      <%= render 'form', employee: @employee %>
+
+      <!-- 提示資訊 -->
+      <div class="mt-8 bg-white border-4 border-black p-4 neubrutalist-shadow brutalist-tilt-1">
+        <h3 class="font-bold text-black mb-2">💡 小提示</h3>
+        <p class="text-black font-medium text-sm">
+          建立員工後，您可以隨時編輯員工資料。
+          必填欄位：員工編號、姓名、身分證字號、部門、職位、到職日期、底薪。
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 背景裝飾 -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden">
+    <div class="absolute top-32 left-10 w-6 h-6 bg-green-500 border-4 border-black neubrutalist-shadow brutalist-tilt-1"></div>
+    <div class="absolute bottom-20 right-20 w-4 h-4 bg-blue-600 border-4 border-black neubrutalist-shadow brutalist-tilt-minus-2"></div>
+  </div>
+</div>

@@ -1,0 +1,40 @@
+<div class="min-h-screen bg-gradient-to-br from-yellow-100 to-yellow-200 p-4">
+  <div class="max-w-4xl mx-auto">
+
+    <div class="brutalist-card p-8">
+      <div class="text-center mb-8">
+        <h1 class="text-4xl font-black text-black mb-2 brutalist-tilt-minus-1">
+          編輯員工
+        </h1>
+        <p class="text-lg font-bold text-black"><%= @employee.name %> (<%= @employee.employee_id %>)</p>
+      </div>
+
+      <%= render 'form', employee: @employee %>
+
+      <!-- 危險操作區 -->
+      <div class="mt-8 bg-red-100 border-4 border-black p-4 neubrutalist-shadow brutalist-tilt-minus-1">
+        <h3 class="font-bold text-black mb-2">⚠️ 危險操作</h3>
+        <div class="flex gap-3 items-center">
+          <p class="text-black font-medium text-sm flex-1">
+            設定員工為離職狀態將保留資料但標記為不在職。
+          </p>
+          <% if @employee.active? %>
+            <%= link_to "設為離職", company_employee_path(@company, @employee),
+                data: { turbo_method: :delete, turbo_confirm: "確定要將 #{@employee.name} 設為離職狀態嗎？" },
+                class: "bg-red-500 border-4 border-black text-white font-bold py-2 px-4 text-sm neubrutalist-shadow hover:neubrutalism-hover transition-all" %>
+          <% else %>
+            <%= link_to "重新啟用", activate_company_employee_path(@company, @employee),
+                data: { turbo_method: :patch },
+                class: "bg-purple-600 border-4 border-black text-white font-bold py-2 px-4 text-sm neubrutalist-shadow hover:neubrutalism-hover transition-all" %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 背景裝飾 -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden">
+    <div class="absolute top-32 left-10 w-6 h-6 bg-purple-500 border-4 border-black neubrutalist-shadow brutalist-tilt-1"></div>
+    <div class="absolute bottom-20 right-20 w-4 h-4 bg-orange-500 border-4 border-black neubrutalist-shadow brutalist-tilt-minus-2"></div>
+  </div>
+</div>

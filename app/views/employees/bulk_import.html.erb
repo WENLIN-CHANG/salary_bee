@@ -1,0 +1,91 @@
+<div class="min-h-screen bg-gradient-to-br from-yellow-100 to-yellow-200 p-4">
+  <div class="max-w-3xl mx-auto">
+
+    <div class="brutalist-card p-8">
+      <div class="text-center mb-8">
+        <h1 class="text-4xl font-black text-black mb-2 brutalist-tilt-minus-1">
+          匯入員工資料
+        </h1>
+        <p class="text-lg font-bold text-black">批量匯入 <%= @company.name %> 的員工資料</p>
+      </div>
+
+      <!-- 錯誤訊息 -->
+      <% if @import_errors.present? %>
+        <div class="brutalist-error p-4 mb-6">
+          <h3 class="font-bold mb-2">匯入失敗，請修正以下問題：</h3>
+          <ul class="list-disc list-inside">
+            <% @import_errors.each do |error| %>
+              <li><%= error %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <!-- 匯入說明 -->
+      <div class="bg-blue-100 border-4 border-black p-6 neubrutalist-shadow brutalist-tilt-1 mb-6">
+        <h2 class="text-xl font-bold text-black mb-4">📋 使用說明</h2>
+        <ol class="list-decimal list-inside space-y-2 text-black font-medium">
+          <li>下載匯入範本檔案（Excel 格式）</li>
+          <li>填寫員工資料，每行一位員工</li>
+          <li>確保必填欄位都已填寫：員工編號、姓名、身分證字號、部門、職位、到職日期、底薪</li>
+          <li>上傳填寫好的檔案</li>
+        </ol>
+      </div>
+
+      <!-- 下載範本 -->
+      <div class="bg-green-100 border-4 border-black p-6 neubrutalist-shadow mb-6">
+        <h2 class="text-xl font-bold text-black mb-3">📥 下載範本</h2>
+        <%= link_to "下載 Excel 範本", download_template_company_employees_path(@company),
+            class: "brutalist-button-primary py-3 px-6 inline-block" %>
+        <p class="text-black font-medium text-sm mt-2">
+          下載包含範例資料的 Excel 範本檔案
+        </p>
+      </div>
+
+      <!-- 上傳表單 -->
+      <div class="bg-white border-4 border-black p-6 neubrutalist-shadow brutalist-tilt-minus-1">
+        <h2 class="text-xl font-bold text-black mb-4">📤 上傳檔案</h2>
+
+        <%= form_with url: bulk_import_company_employees_path(@company), method: :post, multipart: true, local: true, class: "space-y-4" do |form| %>
+          <div>
+            <%= form.label :file, "選擇檔案", class: "block text-black font-bold mb-2" %>
+            <%= form.file_field :file,
+                accept: ".xlsx,.csv",
+                required: true,
+                class: "brutalist-input w-full px-4 py-3" %>
+            <div class="text-sm text-black mt-1 font-medium">
+              支援格式：Excel (.xlsx) 或 CSV (.csv)
+            </div>
+          </div>
+
+          <div class="pt-4 space-y-3">
+            <%= form.submit "開始匯入",
+                class: "brutalist-button-primary w-full py-4 px-6 text-xl" %>
+
+            <%= link_to "取消", company_employees_path(@company),
+                class: "brutalist-button-secondary block w-full py-3 px-6 text-center text-lg" %>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- 注意事項 -->
+      <div class="mt-8 bg-yellow-400 border-4 border-black p-4 neubrutalist-shadow brutalist-tilt-2">
+        <h3 class="font-bold text-black mb-2">⚠️ 注意事項</h3>
+        <ul class="list-disc list-inside space-y-1 text-black font-medium text-sm">
+          <li>員工編號不可重複，系統會自動檢查</li>
+          <li>身分證字號格式需正確（1 個英文字母 + 9 位數字）</li>
+          <li>日期格式請使用：YYYY-MM-DD（例如：2024-01-01）</li>
+          <li>薪資金額請填入數字，不需要逗號或貨幣符號</li>
+          <li>津貼與扣款欄位請使用 JSON 格式，如：{"伙食津貼": 3000}</li>
+          <li>匯入過程中若有錯誤，將會顯示詳細錯誤訊息</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 背景裝飾 -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden">
+    <div class="absolute top-32 left-10 w-6 h-6 bg-purple-500 border-4 border-black neubrutalist-shadow brutalist-tilt-1"></div>
+    <div class="absolute bottom-20 right-20 w-4 h-4 bg-red-500 border-4 border-black neubrutalist-shadow brutalist-tilt-minus-2"></div>
+  </div>
+</div>

@@ -1,6 +1,7 @@
 class Company < ApplicationRecord
   has_many :user_companies, dependent: :destroy
   has_many :users, through: :user_companies
+  has_many :employees, dependent: :destroy
 
   validates :name, presence: true, uniqueness: true
   validates :tax_id, presence: true, uniqueness: true, format: { with: /\A\d{8}\z/, message: "必須是 8 位數字" }
