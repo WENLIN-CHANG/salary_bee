@@ -6,6 +6,10 @@ class CompaniesController < ApplicationController
   end
 
   def show
+    # 查詢本月的薪資批次
+    @current_month_payroll = @company.payrolls
+                                     .by_period(Date.current.year, Date.current.month)
+                                     .first
   end
 
   def new

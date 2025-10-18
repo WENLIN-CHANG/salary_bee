@@ -1,0 +1,66 @@
+<div class="min-h-screen bg-gradient-to-br from-yellow-200 to-yellow-300 p-4">
+  <div class="max-w-6xl mx-auto">
+
+    <!-- 標題區域 -->
+    <div class="brutalist-card p-8 mb-6">
+      <div class="flex justify-between items-center">
+        <div>
+          <h1 class="text-4xl font-black text-black mb-2 brutalist-tilt-minus-1">
+            薪資管理
+          </h1>
+          <p class="text-lg font-bold text-black"><%= @company.name %> 的薪資批次</p>
+        </div>
+        <%= link_to "新增薪資批次", new_payroll_path,
+                    class: "brutalist-button-primary" %>
+      </div>
+    </div>
+
+    <!-- 薪資列表 -->
+    <div class="space-y-4">
+      <% if @payrolls.any? %>
+        <% @payrolls.each do |payroll| %>
+          <div class="brutalist-card p-6 hover:translate-x-1 hover:-translate-y-1 transition-transform">
+            <%= link_to payroll_path(payroll), class: "block" do %>
+              <div class="flex justify-between items-center">
+                <div>
+                  <h3 class="text-2xl font-black text-black mb-2">
+                    <%= payroll.period_text %>
+                  </h3>
+                  <div class="flex gap-4 text-sm font-bold text-black">
+                    <span>總應發：NT$ <%= number_to_currency(payroll.total_gross_pay || 0, unit: "", precision: 0) %></span>
+                    <span>總實發：NT$ <%= number_to_currency(payroll.total_net_pay || 0, unit: "", precision: 0) %></span>
+                  </div>
+                </div>
+                <div>
+                  <% if payroll.draft? %>
+                    <span class="px-4 py-2 bg-yellow-300 border-4 border-black font-black neubrutalist-shadow brutalist-tilt-1">草稿</span>
+                  <% elsif payroll.confirmed? %>
+                    <span class="px-4 py-2 bg-green-300 border-4 border-black font-black neubrutalist-shadow brutalist-tilt-minus-1">已確認</span>
+                  <% elsif payroll.paid? %>
+                    <span class="px-4 py-2 bg-blue-300 border-4 border-black font-black neubrutalist-shadow brutalist-tilt-2">已發放</span>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      <% else %>
+        <div class="brutalist-card p-8 text-center">
+          <p class="text-xl font-bold text-black mb-4">尚無薪資批次</p>
+          <%= link_to "建立第一個薪資批次", new_payroll_path,
+                      class: "brutalist-button-primary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- 背景裝飾 -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden">
+    <div class="absolute top-20 left-10 w-6 h-6 bg-red-500 border-4 border-black neubrutalist-shadow brutalist-tilt-1"></div>
+    <div class="absolute top-40 right-20 w-4 h-4 bg-orange-500 border-4 border-black neubrutalist-shadow brutalist-tilt-minus-2"></div>
+    <div class="absolute top-1/3 left-1/4 w-5 h-5 bg-yellow-400 border-4 border-black neubrutalist-shadow brutalist-tilt-2"></div>
+    <div class="absolute bottom-40 left-20 w-6 h-6 bg-green-500 border-4 border-black neubrutalist-shadow brutalist-tilt-minus-1"></div>
+    <div class="absolute bottom-20 right-10 w-4 h-4 bg-blue-500 border-4 border-black neubrutalist-shadow brutalist-tilt-1"></div>
+    <div class="absolute top-2/3 right-1/3 w-5 h-5 bg-purple-500 border-4 border-black neubrutalist-shadow brutalist-tilt-minus-2"></div>
+  </div>
+</div>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_29_090000) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_18_022100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -67,6 +67,38 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_29_090000) do
     t.index ["salary_min", "salary_max"], name: "index_insurances_on_salary_range"
   end
 
+  create_table "payroll_items", force: :cascade do |t|
+    t.bigint "payroll_id", null: false
+    t.bigint "employee_id", null: false
+    t.decimal "base_salary", precision: 10, null: false
+    t.decimal "total_allowances", precision: 10, default: "0"
+    t.decimal "total_deductions", precision: 10, default: "0"
+    t.decimal "total_insurance_premium", precision: 10, default: "0"
+    t.decimal "gross_pay", precision: 10
+    t.decimal "net_pay", precision: 10
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["employee_id"], name: "index_payroll_items_on_employee_id"
+    t.index ["payroll_id", "employee_id"], name: "index_payroll_items_on_payroll_id_and_employee_id", unique: true
+    t.index ["payroll_id"], name: "index_payroll_items_on_payroll_id"
+  end
+
+  create_table "payrolls", force: :cascade do |t|
+    t.bigint "company_id", null: false
+    t.integer "year", null: false
+    t.integer "month", null: false
+    t.string "status", default: "draft"
+    t.decimal "total_gross_pay", precision: 12
+    t.decimal "total_net_pay", precision: 12
+    t.datetime "confirmed_at"
+    t.datetime "paid_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["company_id", "year", "month"], name: "index_payrolls_on_company_id_and_year_and_month", unique: true
+    t.index ["company_id"], name: "index_payrolls_on_company_id"
+    t.index ["status"], name: "index_payrolls_on_status"
+  end
+
   create_table "sessions", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "ip_address"
@@ -95,6 +127,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_29_090000) do
   end
 
   add_foreign_key "employees", "companies"
+  add_foreign_key "payroll_items", "employees"
+  add_foreign_key "payroll_items", "payrolls"
+  add_foreign_key "payrolls", "companies"
   add_foreign_key "sessions", "users"
   add_foreign_key "user_companies", "companies"
   add_foreign_key "user_companies", "users"

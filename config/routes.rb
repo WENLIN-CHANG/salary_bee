@@ -19,6 +19,13 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :payrolls, only: [ :index, :show, :new, :create ] do
+    member do
+      post :calculate
+      post :confirm
+    end
+  end
+
   get "up" => "rails/health#show", as: :rails_health_check
 
   root "dashboard#index"
