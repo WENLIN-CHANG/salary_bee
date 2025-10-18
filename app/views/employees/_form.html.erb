@@ -18,14 +18,6 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
-        <%= form.label :employee_id, "員工編號", class: "block text-black font-bold mb-2" %>
-        <%= form.text_field :employee_id,
-            required: true,
-            placeholder: "例如：EMP0001",
-            class: "brutalist-input w-full px-4 py-3" %>
-      </div>
-
-      <div>
         <%= form.label :name, "姓名", class: "block text-black font-bold mb-2" %>
         <%= form.text_field :name,
             required: true,
@@ -45,7 +37,7 @@
       <div>
         <%= form.label :email, "Email", class: "block text-black font-bold mb-2" %>
         <%= form.email_field :email,
-            placeholder: "employee@example.com",
+            placeholder: "employee@example.com（選填）",
             class: "brutalist-input w-full px-4 py-3" %>
       </div>
 
@@ -72,8 +64,7 @@
       <div>
         <%= form.label :department, "部門", class: "block text-black font-bold mb-2" %>
         <%= form.text_field :department,
-            required: true,
-            placeholder: "例如：工程部",
+            placeholder: "（選填）",
             class: "brutalist-input w-full px-4 py-3" %>
       </div>
 
@@ -81,7 +72,7 @@
         <%= form.label :position, "職位", class: "block text-black font-bold mb-2" %>
         <%= form.text_field :position,
             required: true,
-            placeholder: "例如：工程師",
+            placeholder: "例如：護理師",
             class: "brutalist-input w-full px-4 py-3" %>
       </div>
 

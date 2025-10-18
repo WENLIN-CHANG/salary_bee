@@ -8,9 +8,9 @@ RSpec.describe EmployeeImportService, type: :service do
     context 'with valid CSV file' do
       let(:csv_content) do
         <<~CSV
-          員工編號,姓名,身分證字號,Email,電話,生日,到職日期,部門,職位,底薪,津貼（JSON格式）,扣款（JSON格式）
-          EMP0001,張三,A123456789,zhang@example.com,0912345678,1990-01-01,2024-01-01,工程部,工程師,40000,{},{}
-          EMP0002,李四,B987654321,li@example.com,0987654321,1992-05-15,2024-02-01,業務部,業務員,35000,"{""交通津貼"":2000}","{""勞保費"":1000}"
+          姓名,身分證字號,Email,電話,生日,到職日期,部門,職位,底薪,津貼（JSON格式）,扣款（JSON格式）
+          張三,A123456789,zhang@example.com,0912345678,1990-01-01,2024-01-01,工程部,工程師,40000,{},{}
+          李四,B987654321,li@example.com,0987654321,1992-05-15,2024-02-01,業務部,業務員,35000,"{""交通津貼"":2000}","{""勞保費"":1000}"
         CSV
       end
 
@@ -33,11 +33,11 @@ RSpec.describe EmployeeImportService, type: :service do
       end
 
       it 'parses employee attributes correctly' do
-service.call
+        service.call
 
-        employee = company.employees.find_by(employee_id: 'EMP0001')
+        employee = company.employees.find_by(name: '張三')
         expect(employee).to be_present
-        expect(employee.name).to eq('張三')
+        expect(employee.employee_id).to be_present # Auto-generated
         expect(employee.id_number).to eq('A123456789')
         expect(employee.email).to eq('zhang@example.com')
         expect(employee.phone).to eq('0912345678')
@@ -49,16 +49,16 @@ service.call
       end
 
       it 'parses JSON allowances correctly' do
-service.call
+        service.call
 
-        employee = company.employees.find_by(employee_id: 'EMP0002')
+        employee = company.employees.find_by(name: '李四')
         expect(employee.allowances).to eq({ "交通津貼" => 2000 })
       end
 
       it 'parses JSON deductions correctly' do
-service.call
+        service.call
 
-        employee = company.employees.find_by(employee_id: 'EMP0002')
+        employee = company.employees.find_by(name: '李四')
         expect(employee.deductions).to eq({ "勞保費" => 1000 })
       end
     end
@@ -72,7 +72,6 @@ service.call
         allow(Roo::Spreadsheet).to receive(:open).and_return(mock_excel)
         allow(mock_excel).to receive(:parse).and_return([
           {
-            "員工編號" => "EMP0001",
             "姓名" => "Excel員工",
             "到職日期" => Date.parse("2024-01-01"),
             "底薪" => 40000
@@ -90,8 +89,8 @@ service.call
     context 'with missing required fields' do
       let(:csv_content) do
         <<~CSV
-          員工編號,姓名,Email,到職日期,底薪
-          EMP0001,張三,zhang@example.com,,40000
+          姓名,Email,到職日期,底薪
+          張三,zhang@example.com,,40000
         CSV
       end
 
@@ -105,7 +104,7 @@ service.call
       after { file.close! }
 
       it 'rejects row with missing hire_date' do
-expect {
+        expect {
           service.call
         }.not_to change(Employee, :count)
 
@@ -114,40 +113,11 @@ expect {
       end
     end
 
-    context 'with duplicate employee_id' do
-      let!(:existing_employee) { create(:employee, company: company, employee_id: 'EMP0001') }
-
-      let(:csv_content) do
-        <<~CSV
-          員工編號,姓名,到職日期,底薪
-          EMP0001,重複員工,2024-01-01,40000
-        CSV
-      end
-
-      let(:file) do
-        Tempfile.new(['employees', '.csv']).tap do |f|
-          f.write(csv_content)
-          f.rewind
-        end
-      end
-
-      after { file.close! }
-
-      it 'rejects row with duplicate employee_id' do
-expect {
-          service.call
-        }.not_to change(Employee, :count)
-
-        expect(service.success?).to be false
-        expect(service.errors).to include(match(/員工編號 EMP0001 已存在/))
-      end
-    end
-
     context 'with validation errors' do
       let(:csv_content) do
         <<~CSV
-          員工編號,姓名,到職日期,底薪
-          EMP0001,員工A,2024-01-01,-1000
+          姓名,到職日期,底薪
+          員工A,2024-01-01,-1000
         CSV
       end
 
@@ -161,7 +131,7 @@ expect {
       after { file.close! }
 
       it 'rolls back transaction on validation error' do
-expect {
+        expect {
           service.call
         }.not_to change(Employee, :count)
 
@@ -170,7 +140,7 @@ expect {
       end
 
       it 'returns row number with error message' do
-service.call
+        service.call
 
         expect(service.errors.first).to match(/第 2 行/)
       end
@@ -223,7 +193,7 @@ service.call
       after { file.close! }
 
       it 'handles parsing errors gracefully' do
-expect {
+        expect {
           service.call
         }.not_to raise_error
 
@@ -234,8 +204,8 @@ expect {
     context 'date parsing' do
       let(:csv_content) do
         <<~CSV
-          員工編號,姓名,生日,到職日期,底薪
-          EMP0001,員工A,1990/01/01,2024-01-15,40000
+          姓名,生日,到職日期,底薪
+          員工A,1990/01/01,2024-01-15,40000
         CSV
       end
 
@@ -249,9 +219,9 @@ expect {
       after { file.close! }
 
       it 'parses various date formats correctly' do
-service.call
+        service.call
 
-        employee = company.employees.find_by(employee_id: 'EMP0001')
+        employee = company.employees.find_by(name: '員工A')
         expect(employee.birth_date).to eq(Date.parse('1990-01-01'))
         expect(employee.hire_date).to eq(Date.parse('2024-01-15'))
       end
@@ -260,9 +230,9 @@ service.call
     context 'decimal parsing' do
       let(:csv_content) do
         <<~CSV
-          員工編號,姓名,到職日期,底薪
-          EMP0001,員工A,2024-01-01,"40,000"
-          EMP0002,員工B,2024-01-01,45000.50
+          姓名,到職日期,底薪
+          員工A,2024-01-01,"40,000"
+          員工B,2024-01-01,45000.50
         CSV
       end
 
@@ -276,10 +246,10 @@ service.call
       after { file.close! }
 
       it 'parses decimal values with commas and decimals' do
-service.call
+        service.call
 
-        employee1 = company.employees.find_by(employee_id: 'EMP0001')
-        employee2 = company.employees.find_by(employee_id: 'EMP0002')
+        employee1 = company.employees.find_by(name: '員工A')
+        employee2 = company.employees.find_by(name: '員工B')
 
         expect(employee1.base_salary).to eq(40000)
         expect(employee2.base_salary).to eq(45000.50)

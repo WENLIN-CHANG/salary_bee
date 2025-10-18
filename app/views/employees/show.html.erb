@@ -70,7 +70,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <p class="font-bold text-black text-sm mb-1">部門</p>
-            <p class="font-medium text-black"><%= @employee.department %></p>
+            <p class="font-medium text-black"><%= @employee.department || "未分配" %></p>
           </div>
           <div>
             <p class="font-bold text-black text-sm mb-1">職位</p>

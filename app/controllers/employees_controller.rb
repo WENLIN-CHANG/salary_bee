@@ -113,9 +113,9 @@ class EmployeesController < ApplicationController
     worksheet = workbook[0]
     worksheet.sheet_name = "員工資料範本"
 
-    # Headers
+    # Headers (員工編號會自動產生，不需要在範本中)
     headers = [
-      "員工編號", "姓名", "身分證字號", "Email", "電話", "生日",
+      "姓名", "身分證字號", "Email", "電話", "生日",
       "到職日期", "部門", "職位", "底薪",
       "津貼（JSON格式）", "扣款（JSON格式）"
     ]
@@ -126,7 +126,7 @@ class EmployeesController < ApplicationController
 
     # Example row
     example = [
-      "EMP0001", "張三", "A123456789", "zhang@example.com",
+      "張三", "A123456789", "zhang@example.com",
       "0912345678", "1990-01-01", "2024-01-01", "工程部",
       "工程師", 40000, "{}", "{}"
     ]
@@ -163,7 +163,7 @@ class EmployeesController < ApplicationController
 
   def employee_params
     params.require(:employee).permit(
-      :employee_id, :name, :id_number, :email, :phone, :birth_date,
+      :name, :id_number, :email, :phone, :birth_date,
       :hire_date, :resign_date, :department, :position, :base_salary,
       :labor_insurance_group, :health_insurance_group,
       allowances: {}, deductions: {}

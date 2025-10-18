@@ -1,6 +1,9 @@
 class Employee < ApplicationRecord
   belongs_to :company
 
+  # Callbacks
+  before_validation :generate_employee_id, on: :create
+
   # Validations
   validates :employee_id, presence: true,
                          uniqueness: { scope: :company_id }
@@ -48,6 +51,25 @@ class Employee < ApplicationRecord
   end
 
   private
+
+  def generate_employee_id
+    return if employee_id.present?
+    return unless company # Skip if no company (e.g., during validation tests)
+
+    year = Date.current.year
+    last_employee = company.employees
+      .where("employee_id LIKE ?", "EMP#{year}%")
+      .order(employee_id: :desc)
+      .first
+
+    next_number = if last_employee
+      last_employee.employee_id[7..].to_i + 1
+    else
+      1
+    end
+
+    self.employee_id = "EMP#{year}#{next_number.to_s.rjust(4, '0')}"
+  end
 
   def hire_date_cannot_be_future
     return if hire_date.blank?

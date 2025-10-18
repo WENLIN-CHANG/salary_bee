@@ -9,30 +9,56 @@ RSpec.describe Employee, type: :model do
     subject { build(:employee) }
 
     # Presence validations
-    it { should validate_presence_of(:employee_id) }
     it { should validate_presence_of(:name) }
     it { should validate_presence_of(:hire_date) }
     it { should validate_presence_of(:base_salary) }
+    # employee_id is auto-generated, so we don't test for presence validation
 
-    # Uniqueness validation
-    it 'validates uniqueness of employee_id scoped to company' do
-      company = create(:company)
-      create(:employee, company: company, employee_id: 'EMP0001')
+    # Auto-generation tests
+    describe 'employee_id auto-generation' do
+      it 'automatically generates employee_id on create' do
+        company = create(:company)
+        employee = company.employees.create(
+          name: '測試員工',
+          hire_date: Date.current,
+          base_salary: 40000
+        )
 
-      duplicate_employee = build(:employee, company: company, employee_id: 'EMP0001')
+        expect(employee.employee_id).to be_present
+        expect(employee.employee_id).to match(/\AEMP\d{8}\z/)
+      end
 
-      expect(duplicate_employee).not_to be_valid
-      expect(duplicate_employee.errors[:employee_id]).to include('has already been taken')
-    end
+      it 'generates employee_id with current year' do
+        company = create(:company)
+        employee = create(:employee, company: company)
 
-    it 'allows same employee_id for different companies' do
-      company1 = create(:company)
-      company2 = create(:company)
+        year = Date.current.year
+        expect(employee.employee_id).to start_with("EMP#{year}")
+      end
 
-      create(:employee, company: company1, employee_id: 'EMP0001')
-      employee2 = build(:employee, company: company2, employee_id: 'EMP0001')
+      it 'increments employee_id for same company and year' do
+        company = create(:company)
+        employee1 = create(:employee, company: company)
+        employee2 = create(:employee, company: company)
 
-      expect(employee2).to be_valid
+        # Extract the numeric part after "EMP" and year
+        number1 = employee1.employee_id[7..].to_i
+        number2 = employee2.employee_id[7..].to_i
+
+        expect(number2).to eq(number1 + 1)
+      end
+
+      it 'does not override existing employee_id if provided' do
+        company = create(:company)
+        employee = company.employees.create(
+          employee_id: 'CUSTOM001',
+          name: '測試員工',
+          hire_date: Date.current,
+          base_salary: 40000
+        )
+
+        expect(employee.employee_id).to eq('CUSTOM001')
+      end
     end
 
     # Numericality validation

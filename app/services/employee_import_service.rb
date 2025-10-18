@@ -68,13 +68,7 @@ class EmployeeImportService
           raise ActiveRecord::Rollback
         end
 
-        # Check for duplicate employee_id
-        if company.employees.exists?(employee_id: employee_data[:employee_id])
-          add_error("員工編號 #{employee_data[:employee_id]} 已存在")
-          raise ActiveRecord::Rollback
-        end
-
-        # Create employee
+        # Create employee (employee_id will be auto-generated)
         employee = company.employees.build(employee_data)
 
         unless employee.save
@@ -90,7 +84,6 @@ class EmployeeImportService
 
   def extract_employee_data(row)
     {
-      employee_id: row["員工編號"],
       name: row["姓名"],
       id_number: row["身分證字號"],
       email: row["Email"],
@@ -109,7 +102,7 @@ class EmployeeImportService
   end
 
   def validate_required_fields(data, row_number)
-    required_fields = [ :employee_id, :name, :hire_date, :base_salary ]
+    required_fields = [ :name, :hire_date, :base_salary ]
 
     missing = required_fields.select { |field| data[field].blank? }
 
@@ -124,7 +117,6 @@ class EmployeeImportService
 
   def translate_field_name(field)
     {
-      employee_id: "員工編號",
       name: "姓名",
       hire_date: "到職日期",
       base_salary: "底薪"

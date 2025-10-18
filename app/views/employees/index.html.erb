@@ -38,14 +38,6 @@
                   {},
                   class: "brutalist-input w-full px-4 py-2" %>
             </div>
-
-            <!-- 顯示離職員工 -->
-            <div>
-              <%= f.label :show_all, class: "block text-black font-bold mb-2" do %>
-                <%= f.check_box :show_all, { checked: params[:show_all] == "1" }, "1", "0" %>
-                顯示離職員工
-              <% end %>
-            </div>
           </div>
 
           <div class="flex space-x-3">
@@ -84,7 +76,7 @@
                 <tr class="border-b-2 border-black <%= 'bg-gray-100' if index.even? %>">
                   <td class="px-4 py-3 font-bold text-black"><%= employee.employee_id %></td>
                   <td class="px-4 py-3 font-bold text-black"><%= employee.name %></td>
-                  <td class="px-4 py-3 font-medium text-black"><%= employee.department %></td>
+                  <td class="px-4 py-3 font-medium text-black"><%= employee.department || "未分配" %></td>
                   <td class="px-4 py-3 font-medium text-black"><%= employee.position %></td>
                   <td class="px-4 py-3 font-medium text-black"><%= employee.hire_date.strftime("%Y-%m-%d") %></td>
                   <td class="px-4 py-3">
