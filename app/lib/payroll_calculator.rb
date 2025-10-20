@@ -16,10 +16,10 @@ module PayrollCalculator
     return 0 if base_salary <= 0
 
     # 計算四種保險的員工負擔
-    labor = Insurance.calculate_premium('勞保', base_salary)
-    health = Insurance.calculate_premium('健保', base_salary)
-    pension = Insurance.calculate_premium('勞退', base_salary)
-    occupational = Insurance.calculate_premium('職災險', base_salary)
+    labor = Insurance.calculate_premium("勞保", base_salary)
+    health = Insurance.calculate_premium("健保", base_salary)
+    pension = Insurance.calculate_premium("勞退", base_salary)
+    occupational = Insurance.calculate_premium("職災險", base_salary)
 
     # 加總員工負擔部分（處理 nil 的情況）
     total = [

@@ -13,7 +13,7 @@ RSpec.describe Payroll, type: :model do
   end
 
   describe 'indexes' do
-    it { should have_db_index([:company_id, :year, :month]).unique(true) }
+    it { should have_db_index([ :company_id, :year, :month ]).unique(true) }
     it { should have_db_index(:status) }
   end
 
@@ -33,7 +33,7 @@ RSpec.describe Payroll, type: :model do
 
     it do
       should validate_uniqueness_of(:month)
-        .scoped_to([:company_id, :year])
+        .scoped_to([ :company_id, :year ])
         .with_message('該公司在此年月已有薪資記錄')
     end
 
@@ -130,7 +130,7 @@ RSpec.describe Payroll, type: :model do
 
     describe '.by_company' do
       it '回傳指定公司的薪資記錄' do
-        expect(Payroll.by_company(company1)).to match_array([payroll_2024_01, payroll_2024_02])
+        expect(Payroll.by_company(company1)).to match_array([ payroll_2024_01, payroll_2024_02 ])
       end
     end
 

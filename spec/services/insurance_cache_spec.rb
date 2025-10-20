@@ -186,7 +186,7 @@ RSpec.describe InsuranceCache, type: :service do
       table = InsuranceCache.build_lookup_table
       labor_grades = table["labor"]
 
-      expect(labor_grades.map(&:salary_min)).to eq([0, 25001])
+      expect(labor_grades.map(&:salary_min)).to eq([ 0, 25001 ])
     end
 
     it "only includes active insurances" do

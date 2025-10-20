@@ -15,7 +15,7 @@ RSpec.describe EmployeeImportService, type: :service do
       end
 
       let(:file) do
-        Tempfile.new(['employees', '.csv']).tap do |f|
+        Tempfile.new([ 'employees', '.csv' ]).tap do |f|
           f.write(csv_content)
           f.rewind
         end
@@ -64,7 +64,7 @@ RSpec.describe EmployeeImportService, type: :service do
     end
 
     context 'with valid Excel file' do
-      let(:file) { Tempfile.new(['employees', '.xlsx']) }
+      let(:file) { Tempfile.new([ 'employees', '.xlsx' ]) }
 
       it 'imports employees from Excel' do
         # Mock Roo spreadsheet
@@ -95,7 +95,7 @@ RSpec.describe EmployeeImportService, type: :service do
       end
 
       let(:file) do
-        Tempfile.new(['employees', '.csv']).tap do |f|
+        Tempfile.new([ 'employees', '.csv' ]).tap do |f|
           f.write(csv_content)
           f.rewind
         end
@@ -122,7 +122,7 @@ RSpec.describe EmployeeImportService, type: :service do
       end
 
       let(:file) do
-        Tempfile.new(['employees', '.csv']).tap do |f|
+        Tempfile.new([ 'employees', '.csv' ]).tap do |f|
           f.write(csv_content)
           f.rewind
         end
@@ -148,7 +148,7 @@ RSpec.describe EmployeeImportService, type: :service do
 
     context 'with unsupported file format' do
       let(:file) do
-        Tempfile.new(['employees', '.txt']).tap do |f|
+        Tempfile.new([ 'employees', '.txt' ]).tap do |f|
           f.write("text content")
           f.rewind
         end
@@ -157,7 +157,6 @@ RSpec.describe EmployeeImportService, type: :service do
       after { file.close! }
 
       it 'rejects unsupported file format' do
-
         expect {
           service.call
         }.not_to change(Employee, :count)
@@ -184,7 +183,7 @@ RSpec.describe EmployeeImportService, type: :service do
       let(:csv_content) { "Invalid CSV\nwith\"unclosed\nquotes" }
 
       let(:file) do
-        Tempfile.new(['employees', '.csv']).tap do |f|
+        Tempfile.new([ 'employees', '.csv' ]).tap do |f|
           f.write(csv_content)
           f.rewind
         end
@@ -210,7 +209,7 @@ RSpec.describe EmployeeImportService, type: :service do
       end
 
       let(:file) do
-        Tempfile.new(['employees', '.csv']).tap do |f|
+        Tempfile.new([ 'employees', '.csv' ]).tap do |f|
           f.write(csv_content)
           f.rewind
         end
@@ -237,7 +236,7 @@ RSpec.describe EmployeeImportService, type: :service do
       end
 
       let(:file) do
-        Tempfile.new(['employees', '.csv']).tap do |f|
+        Tempfile.new([ 'employees', '.csv' ]).tap do |f|
           f.write(csv_content)
           f.rewind
         end

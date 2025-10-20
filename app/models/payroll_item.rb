@@ -14,5 +14,5 @@ class PayrollItem < ApplicationRecord
   validates :gross_pay, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validates :net_pay, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
 
-  validates :employee_id, uniqueness: { scope: :payroll_id, message: '該員工在此薪資批次中已存在' }
+  validates :employee_id, uniqueness: { scope: :payroll_id, message: "該員工在此薪資批次中已存在" }
 end

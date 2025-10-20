@@ -129,7 +129,7 @@ RSpec.describe EmployeeSequence, type: :model do
       end
 
       it 'handles concurrent creation of sequences for different years' do
-        years = [2024, 2025, 2026]
+        years = [ 2024, 2025, 2026 ]
         threads = []
         results = {}
         mutex = Mutex.new

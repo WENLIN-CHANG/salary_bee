@@ -13,7 +13,7 @@ class CreatePayrolls < ActiveRecord::Migration[8.0]
       t.timestamps
     end
 
-    add_index :payrolls, [:company_id, :year, :month], unique: true
+    add_index :payrolls, [ :company_id, :year, :month ], unique: true
     add_index :payrolls, :status
   end
 end

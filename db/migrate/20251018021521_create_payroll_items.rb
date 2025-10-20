@@ -13,6 +13,6 @@ class CreatePayrollItems < ActiveRecord::Migration[8.0]
       t.timestamps
     end
 
-    add_index :payroll_items, [:payroll_id, :employee_id], unique: true
+    add_index :payroll_items, [ :payroll_id, :employee_id ], unique: true
   end
 end

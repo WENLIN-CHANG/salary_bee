@@ -13,7 +13,7 @@ RSpec.describe PayrollItem, type: :model do
   end
 
   describe 'indexes' do
-    it { should have_db_index([:payroll_id, :employee_id]).unique(true) }
+    it { should have_db_index([ :payroll_id, :employee_id ]).unique(true) }
     it { should have_db_index(:employee_id) }
   end
 

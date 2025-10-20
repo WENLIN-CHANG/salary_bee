@@ -11,7 +11,7 @@ class Payroll < ApplicationRecord
                    numericality: { only_integer: true, greater_than: 2000 }
   validates :month, presence: true,
                     numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 12 }
-  validates :month, uniqueness: { scope: [:company_id, :year], message: '該公司在此年月已有薪資記錄' }
+  validates :month, uniqueness: { scope: [ :company_id, :year ], message: "該公司在此年月已有薪資記錄" }
 
   validates :total_gross_pay, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validates :total_net_pay, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
@@ -77,7 +77,7 @@ class Payroll < ApplicationRecord
       current_month_start = Date.current.beginning_of_month
 
       if period_date > current_month_start
-        errors.add(:base, '薪資期間不可設定為未來')
+        errors.add(:base, "薪資期間不可設定為未來")
       end
     rescue Date::Error, ArgumentError
       # Invalid date (e.g., month = 13), skip this validation

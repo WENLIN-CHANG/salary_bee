@@ -1,6 +1,6 @@
 # Helper to generate valid Taiwan Tax IDs for testing
 module TaiwanTaxIdGenerator
-  VALIDATORS = [1, 2, 1, 2, 1, 2, 4, 1].freeze
+  VALIDATORS = [ 1, 2, 1, 2, 1, 2, 4, 1 ].freeze
 
   def self.number_reducer(num)
     return num if num < 10
@@ -33,7 +33,7 @@ module TaiwanTaxIdGenerator
 
     if tax_id[6] == "7"
       check_sum[6] = 0
-      [0, 1].include?(check_sum.sum % 5)
+      [ 0, 1 ].include?(check_sum.sum % 5)
     else
       check_sum.sum % 5 == 0
     end

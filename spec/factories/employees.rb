@@ -7,7 +7,7 @@ FactoryBot.define do
       # 台灣身分證格式：1英文字母 + 9數字
       # 使用有效的格式範例（不驗證檢查碼）
       letters = %w[A B C D E F G H I J K L M N O P Q R S T U V W X Y Z]
-      "#{letters[n % 26]}1234567#{(n % 10).to_s}#{((n + 1) % 10).to_s}"
+      "#{letters[n % 26]}1234567#{(n % 10)}#{((n + 1) % 10)}"
     end
     sequence(:email) { |n| "employee#{n}@example.com" }
     sequence(:phone) { |n| "09#{n.to_s.rjust(8, '0')}" }

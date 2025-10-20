@@ -12,8 +12,8 @@ RSpec.describe 'Payroll and PayrollItem Integration', type: :model do
       item1 = create(:payroll_item, payroll: payroll, employee: employee1)
       item2 = create(:payroll_item, payroll: payroll, employee: employee2)
 
-      expect(payroll.payroll_items).to match_array([item1, item2])
-      expect(payroll.employees).to match_array([employee1, employee2])
+      expect(payroll.payroll_items).to match_array([ item1, item2 ])
+      expect(payroll.employees).to match_array([ employee1, employee2 ])
     end
   end
 
