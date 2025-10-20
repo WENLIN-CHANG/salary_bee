@@ -207,6 +207,152 @@ RSpec.describe PayrollCalculationService do
     end
   end
 
+  describe '#calculate_all' do
+    let!(:employee1) do
+      create(:employee,
+             company: company,
+             base_salary: 40000,
+             allowances: { "交通津貼" => 2000 },
+             deductions: { "借支" => 500 })
+    end
+    let!(:employee2) do
+      create(:employee,
+             company: company,
+             base_salary: 50000,
+             allowances: {},
+             deductions: {})
+    end
+
+    it '回傳所有員工的計算結果' do
+      service = PayrollCalculationService.new(payroll)
+      results = service.calculate_all
+
+      expect(results).to be_an(Array)
+      expect(results.size).to eq(2)
+    end
+
+    it '計算結果包含 employee 和 result' do
+      service = PayrollCalculationService.new(payroll)
+      results = service.calculate_all
+
+      first_result = results.first
+      expect(first_result).to have_key(:employee)
+      expect(first_result).to have_key(:result)
+      expect(first_result[:employee]).to be_a(Employee)
+      expect(first_result[:result]).to be_a(Hash)
+    end
+
+    it '不寫入資料庫（純計算）' do
+      service = PayrollCalculationService.new(payroll)
+
+      expect { service.calculate_all }.not_to change { payroll.payroll_items.count }
+    end
+
+    it '計算結果包含正確的薪資數據' do
+      service = PayrollCalculationService.new(payroll)
+      results = service.calculate_all
+
+      result1 = results.find { |r| r[:employee] == employee1 }[:result]
+
+      expect(result1).to have_key(:gross_pay)
+      expect(result1).to have_key(:total_insurance_premium)
+      expect(result1).to have_key(:net_pay)
+      expect(result1[:gross_pay]).to eq(42000) # 40000 + 2000
+    end
+  end
+
+  describe '#persist!' do
+    let!(:employee1) { create(:employee, company: company, base_salary: 40000) }
+    let!(:employee2) { create(:employee, company: company, base_salary: 50000) }
+
+    it '將計算結果寫入資料庫' do
+      service = PayrollCalculationService.new(payroll)
+      calculations = service.calculate_all
+
+      expect { service.persist!(calculations) }.to change { payroll.payroll_items.count }.from(0).to(2)
+    end
+
+    it '回傳 true' do
+      service = PayrollCalculationService.new(payroll)
+      calculations = service.calculate_all
+
+      expect(service.persist!(calculations)).to be true
+    end
+
+    it '正確存儲計算結果' do
+      service = PayrollCalculationService.new(payroll)
+      calculations = service.calculate_all
+
+      service.persist!(calculations)
+
+      item1 = payroll.payroll_items.find_by(employee: employee1)
+      expect(item1.base_salary).to eq(40000)
+      expect(item1.gross_pay).to eq(40000)
+    end
+
+    it '更新 Payroll 總額' do
+      service = PayrollCalculationService.new(payroll)
+      calculations = service.calculate_all
+
+      service.persist!(calculations)
+
+      payroll.reload
+      expect(payroll.total_gross_pay).to be > 0
+      expect(payroll.total_net_pay).to be > 0
+    end
+
+    it '在 transaction 中執行' do
+      service = PayrollCalculationService.new(payroll)
+      calculations = service.calculate_all
+
+      # 模擬在持久化過程中發生錯誤
+      allow(payroll).to receive(:calculate_totals).and_raise(StandardError, "計算總額失敗")
+
+      expect { service.persist!(calculations) }.to raise_error(StandardError, "計算總額失敗")
+
+      # 確認沒有建立任何項目（已回滾）
+      expect(payroll.payroll_items.count).to eq(0)
+    end
+  end
+
+  describe '#calculate_for_employee_pure' do
+    let!(:employee) do
+      create(:employee,
+             company: company,
+             base_salary: 40000,
+             allowances: { "交通津貼" => 2000 },
+             deductions: { "借支" => 500 })
+    end
+
+    it '回傳計算結果 hash' do
+      service = PayrollCalculationService.new(payroll)
+      result = service.calculate_for_employee_pure(employee)
+
+      expect(result).to be_a(Hash)
+      expect(result).to have_key(:gross_pay)
+      expect(result).to have_key(:total_insurance_premium)
+      expect(result).to have_key(:net_pay)
+    end
+
+    it '不寫入資料庫' do
+      service = PayrollCalculationService.new(payroll)
+
+      expect { service.calculate_for_employee_pure(employee) }.not_to change { payroll.payroll_items.count }
+    end
+
+    it '使用 PayrollCalculator 計算薪資' do
+      service = PayrollCalculationService.new(payroll)
+
+      expect(PayrollCalculator).to receive(:calculate_all).with(
+        base_salary: 40000,
+        total_allowances: 2000,
+        total_deductions: 500
+      ).and_call_original
+
+      service.calculate_for_employee_pure(employee)
+    end
+  end
+
   describe '#calculate_for_employee' do
     let!(:employee) do
       create(:employee,
@@ -216,7 +362,7 @@ RSpec.describe PayrollCalculationService do
              deductions: { "借支" => 500 })
     end
 
-    it '為單一員工建立並計算薪資項目' do
+    it '為單一員工建立並計算薪資項目（向後相容）' do
       service = PayrollCalculationService.new(payroll)
       item = service.calculate_for_employee(employee)
 

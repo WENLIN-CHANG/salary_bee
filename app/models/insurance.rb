@@ -23,7 +23,22 @@ class Insurance < ApplicationRecord
     active.by_type(insurance_type).by_salary(salary).first
   end
 
+  # Calculate premium using cached insurance data (default, fast)
+  # Falls back to database query if cache is not available
   def self.calculate_premium(insurance_type, salary)
+    calculate_premium_with_cache(insurance_type, salary)
+  rescue => e
+    Rails.logger.warn "[Insurance] Cache failed, falling back to DB: #{e.message}"
+    calculate_premium_from_db(insurance_type, salary)
+  end
+
+  # Calculate premium using cached data (avoids N+1 queries)
+  def self.calculate_premium_with_cache(insurance_type, salary)
+    InsuranceCache.calculate_premium(insurance_type, salary)
+  end
+
+  # Calculate premium directly from database (fallback)
+  def self.calculate_premium_from_db(insurance_type, salary)
     grade = find_grade_by_salary(insurance_type, salary)
     return nil unless grade
 

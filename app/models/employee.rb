@@ -57,18 +57,12 @@ class Employee < ApplicationRecord
     return unless company # Skip if no company (e.g., during validation tests)
 
     year = Date.current.year
-    last_employee = company.employees
-      .where("employee_id LIKE ?", "EMP#{year}%")
-      .order(employee_id: :desc)
-      .first
+    number = EmployeeSequence.next_for(company, year)
+    self.employee_id = format_employee_id(year, number)
+  end
 
-    next_number = if last_employee
-      last_employee.employee_id[7..].to_i + 1
-    else
-      1
-    end
-
-    self.employee_id = "EMP#{year}#{next_number.to_s.rjust(4, '0')}"
+  def format_employee_id(year, number)
+    "EMP#{year}#{number.to_s.rjust(4, '0')}"
   end
 
   def hire_date_cannot_be_future

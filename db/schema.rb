@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_18_022100) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_20_135016) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -21,6 +21,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_18_022100) do
     t.datetime "updated_at", null: false
     t.string "tax_id", limit: 8, null: false
     t.index ["tax_id"], name: "index_companies_on_tax_id", unique: true
+  end
+
+  create_table "employee_sequences", force: :cascade do |t|
+    t.bigint "company_id", null: false
+    t.integer "year", null: false
+    t.integer "last_number", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["company_id", "year"], name: "index_employee_sequences_on_company_and_year", unique: true
+    t.index ["company_id"], name: "index_employee_sequences_on_company_id"
   end
 
   create_table "employees", force: :cascade do |t|
@@ -126,6 +136,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_18_022100) do
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
+  add_foreign_key "employee_sequences", "companies"
   add_foreign_key "employees", "companies"
   add_foreign_key "payroll_items", "employees"
   add_foreign_key "payroll_items", "payrolls"
