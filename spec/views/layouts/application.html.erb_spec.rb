@@ -15,16 +15,45 @@ RSpec.describe 'layouts/application.html.erb', type: :view do
       content_for :title, 'Test Page'
     end
 
-    it 'includes flash messages before main content' do
-      # 設定 flash 訊息
+    it 'displays flash notice message' do
       flash[:notice] = 'Test notice message'
-
-      # 渲染 layout
       render
 
-      # 驗證 flash 訊息在 HTML 中出現
+      # 測試行為：訊息是否顯示
       expect(rendered).to include('Test notice message')
-      expect(rendered).to include('text-green-600')
+      # 測試行為：使用者是否能關閉訊息（檢查關閉按鈕存在）
+      expect(rendered).to include('aria-label="關閉"')
+    end
+
+    it 'displays flash alert message' do
+      flash[:alert] = 'Test alert message'
+      render
+
+      # 測試行為：訊息是否顯示
+      expect(rendered).to include('Test alert message')
+      # 測試行為：使用者是否能關閉訊息
+      expect(rendered).to include('aria-label="關閉"')
+    end
+
+    it 'displays multiple flash messages' do
+      flash[:notice] = 'Success message'
+      flash[:alert] = 'Error message'
+      render
+
+      # 測試行為：兩個訊息都顯示
+      expect(rendered).to include('Success message')
+      expect(rendered).to include('Error message')
+    end
+
+    it 'does not render empty flash messages' do
+      flash[:notice] = ''
+      flash[:alert] = nil
+      render
+
+      # 測試行為：空訊息不應該產生額外的 div
+      # 只有固定容器存在
+      flash_containers = rendered.scan(/<div[^>]*x-data="{ show: true }"/).length
+      expect(flash_containers).to eq(0)
     end
   end
 end
