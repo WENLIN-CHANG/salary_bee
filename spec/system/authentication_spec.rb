@@ -56,7 +56,7 @@ RSpec.describe "Authentication System", type: :system do
 
     # 確認停留在登入頁面
     expect(current_path).to eq(new_session_path)
-    expect(page).to have_content("Try another email address or password")
+    expect(page).to have_content("請嘗試其他電子郵件或密碼")
   end
 
   scenario "flash 訊息使用統一樣式" do
@@ -69,10 +69,9 @@ RSpec.describe "Authentication System", type: :system do
     fill_in "密碼", with: "wrongpassword"
     click_button "登入 SalaryBee"
 
-    # 確認 flash 訊息有正確的 CSS classes (在重構後會生效)
-    # 這個測試在重構前會失敗，重構後應該通過
-    within('[class*="text-red-600"]') do
-      expect(page).to have_content("Try another email address or password")
+    # 確認 flash 訊息使用統一的 Neubrutalism 樣式
+    within('.brutalist-error') do
+      expect(page).to have_content("請嘗試其他電子郵件或密碼")
     end
   end
 end

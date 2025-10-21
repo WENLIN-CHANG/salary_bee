@@ -43,7 +43,7 @@ RSpec.describe SessionsController, type: :controller do
           password: "wrongpass"
         }
         expect(response).to redirect_to(new_session_path)
-        expect(flash[:alert]).to eq("Try another email address or password.")
+        expect(flash[:alert]).to eq("請嘗試其他電子郵件或密碼")
       end
 
       it "不存在的 email" do
@@ -52,7 +52,7 @@ RSpec.describe SessionsController, type: :controller do
           password: "password123"
         }
         expect(response).to redirect_to(new_session_path)
-        expect(flash[:alert]).to eq("Try another email address or password.")
+        expect(flash[:alert]).to eq("請嘗試其他電子郵件或密碼")
       end
     end
   end

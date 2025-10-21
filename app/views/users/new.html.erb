@@ -8,19 +8,6 @@
       <p class="text-lg font-bold text-black">建立新帳號</p>
     </div>
 
-    <!-- 錯誤訊息顯示 -->
-    <% if notice %>
-      <div class="brutalist-success p-4 mb-6">
-        <%= notice %>
-      </div>
-    <% end %>
-
-    <% if alert %>
-      <div class="brutalist-error p-4 mb-6">
-        <%= alert %>
-      </div>
-    <% end %>
-
     <% if @user.errors.any? %>
       <div class="brutalist-error p-4 mb-6">
         <h4 class="font-bold mb-2">請修正以下錯誤：</h4>

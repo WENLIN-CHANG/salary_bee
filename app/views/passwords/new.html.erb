@@ -20,19 +20,6 @@
       </p>
     </div>
 
-    <!-- 錯誤訊息顯示 -->
-    <% if notice %>
-      <div class="brutalist-success p-4 mb-6">
-        ✓ <%= notice %>
-      </div>
-    <% end %>
-
-    <% if alert %>
-      <div class="brutalist-error p-4 mb-6">
-        ! <%= alert %>
-      </div>
-    <% end %>
-
     <!-- 忘記密碼表單 -->
     <%= form_with url: passwords_path, local: true, class: "space-y-6", data: { turbo: false } do |form| %>
 

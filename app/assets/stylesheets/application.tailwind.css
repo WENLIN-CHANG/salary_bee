@@ -126,6 +126,24 @@
   transform: rotate(1deg);
 }
 
+.brutalist-info {
+  background-color: #3b82f6;
+  border: 4px solid black;
+  color: white;
+  font-weight: 700;
+  box-shadow: 4px 4px 0px 0px #000;
+  transform: rotate(-0.5deg);
+}
+
+.brutalist-warning {
+  background-color: #f59e0b;
+  border: 4px solid black;
+  color: white;
+  font-weight: 700;
+  box-shadow: 4px 4px 0px 0px #000;
+  transform: rotate(0.5deg);
+}
+
 /* Navbar 專用樣式 */
 .brutalist-navbar {
   z-index: 1000;

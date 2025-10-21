@@ -51,14 +51,14 @@ RSpec.describe "Authentication", type: :request do
       }.to change { ActionMailer::Base.deliveries.count }.by(1)
 
       expect(response).to redirect_to(new_session_path)
-      expect(flash[:notice]).to include("Password reset instructions sent")
+      expect(flash[:notice]).to include("密碼重設指示已發送")
     end
 
     it "不存在的 email 也返回成功訊息" do
       post passwords_path, params: { email_address: "nonexistent@example.com" }
 
       expect(response).to redirect_to(new_session_path)
-      expect(flash[:notice]).to include("Password reset instructions sent")
+      expect(flash[:notice]).to include("密碼重設指示已發送")
       expect(ActionMailer::Base.deliveries.count).to eq(0)
     end
   end

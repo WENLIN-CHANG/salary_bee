@@ -8,19 +8,6 @@
       <p class="text-lg font-bold text-black">薪資管理系統</p>
     </div>
 
-    <!-- 錯誤訊息顯示 -->
-    <% if notice %>
-      <div class="brutalist-success p-4 mb-6">
-        <%= notice %>
-      </div>
-    <% end %>
-
-    <% if alert %>
-      <div class="brutalist-error p-4 mb-6">
-        <%= alert %>
-      </div>
-    <% end %>
-
     <%= form_with url: session_path, class: "space-y-6" do |form| %>
 
       <div>
