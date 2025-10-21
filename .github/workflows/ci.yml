@@ -6,6 +6,7 @@ on:
     branches: [ main ]
 
 jobs:
+  # 安全掃描 - 靜態分析 Rails 安全漏洞
   scan_ruby:
     runs-on: ubuntu-latest
 
@@ -22,6 +23,7 @@ jobs:
       - name: Scan for common Rails security vulnerabilities using static analysis
         run: bin/brakeman --no-pager
 
+  # 程式碼風格檢查 - RuboCop
   lint:
     runs-on: ubuntu-latest
     steps:
@@ -37,3 +39,59 @@ jobs:
       - name: Lint code for consistent style
         run: bin/rubocop -f github
 
+  # 測試 - 執行完整的 RSpec 測試套件
+  test:
+    runs-on: ubuntu-latest
+
+    # PostgreSQL service container
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: salary_bee_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/salary_bee_test
+      RAILS_ENV: test
+      RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install JavaScript dependencies
+        run: npm ci
+
+      - name: Prepare database
+        run: |
+          bin/rails db:create
+          bin/rails db:schema:load
+
+      - name: Precompile assets
+        run: |
+          npm run build
+          npm run build:css
+
+      - name: Run tests
+        run: bundle exec rspec --format documentation

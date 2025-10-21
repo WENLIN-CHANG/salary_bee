@@ -5,20 +5,22 @@ default: &default
 
 development:
   <<: *default
-  database: <%= Rails.application.credentials.db[:database] %>
-  username: <%= Rails.application.credentials.db[:username] %>
-  password: <%= Rails.application.credentials.db[:password] %>
-  host: <%= Rails.application.credentials.db[:host] %>
+  database: <%= Rails.application.credentials.dig(:db, :database) || 'salary_bee_development' %>
+  username: <%= Rails.application.credentials.dig(:db, :username) || ENV['USER'] %>
+  password: <%= Rails.application.credentials.dig(:db, :password) || '' %>
+  host: <%= Rails.application.credentials.dig(:db, :host) || 'localhost' %>
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
 test:
   <<: *default
-  database: <%= Rails.application.credentials.db[:database] %>
-  username: <%= Rails.application.credentials.db[:username] %>
-  password: <%= Rails.application.credentials.db[:password] %>
-  host: <%= Rails.application.credentials.db[:host] %>
+  # 優先使用 DATABASE_URL（CI 環境），沒有的話 fallback 到 credentials（本地開發）
+  url: <%= ENV['DATABASE_URL'] %>
+  database: <%= Rails.application.credentials.dig(:db, :database) || 'salary_bee_test' %>
+  username: <%= Rails.application.credentials.dig(:db, :username) || ENV['USER'] %>
+  password: <%= Rails.application.credentials.dig(:db, :password) || '' %>
+  host: <%= Rails.application.credentials.dig(:db, :host) || 'localhost' %>
 
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
@@ -43,20 +45,21 @@ test:
 production:
   primary: &primary_production
     <<: *default
-    database: <%= Rails.application.credentials.db[:database] %>
-    username: <%= Rails.application.credentials.db[:username] %>
-    password: <%= Rails.application.credentials.db[:password] %>
-    host: <%= Rails.application.credentials.db[:host] %>
+    url: <%= ENV['DATABASE_URL'] %>
+    database: <%= Rails.application.credentials.dig(:db, :database) || 'salary_bee_production' %>
+    username: <%= Rails.application.credentials.dig(:db, :username) || ENV['USER'] %>
+    password: <%= Rails.application.credentials.dig(:db, :password) || '' %>
+    host: <%= Rails.application.credentials.dig(:db, :host) || 'localhost' %>
   cache:
     <<: *primary_production
-    database: <%= "#{Rails.application.credentials.db[:database]}_cache" %>
+    database: <%= "#{Rails.application.credentials.dig(:db, :database) || 'salary_bee_production'}_cache" %>
     migrations_paths: db/cache_migrate
   queue:
     <<: *primary_production
-    database: <%= "#{Rails.application.credentials.db[:database]}_queue" %>
+    database: <%= "#{Rails.application.credentials.dig(:db, :database) || 'salary_bee_production'}_queue" %>
     migrations_paths: db/queue_migrate
   cable:
     <<: *primary_production
-    database: <%= "#{Rails.application.credentials.db[:database]}_cable" %>
+    database: <%= "#{Rails.application.credentials.dig(:db, :database) || 'salary_bee_production'}_cable" %>
     migrations_paths: db/cable_migrate
 
