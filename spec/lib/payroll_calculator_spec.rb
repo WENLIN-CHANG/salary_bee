@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe PayrollCalculator do
+  # 預先載入保險查詢表（模擬 PayrollCalculationService 的行為）
+  let(:insurance_lookup) { InsuranceCache.fetch_lookup_table }
   describe '.calculate_gross_pay' do
     it '計算應發薪資（底薪 + 津貼）' do
       result = PayrollCalculator.calculate_gross_pay(
@@ -39,15 +41,15 @@ RSpec.describe PayrollCalculator do
     it '計算員工負擔的保險費總和' do
       salary = 40000
 
-      result = PayrollCalculator.calculate_insurance_premium(salary)
+      result = PayrollCalculator.calculate_insurance_premium(salary, insurance_lookup)
 
       expect(result).to be_a(Integer)
       expect(result).to be >= 0
     end
 
     it '低薪資的保險費較低' do
-      low_result = PayrollCalculator.calculate_insurance_premium(30000)
-      high_result = PayrollCalculator.calculate_insurance_premium(50000)
+      low_result = PayrollCalculator.calculate_insurance_premium(30000, insurance_lookup)
+      high_result = PayrollCalculator.calculate_insurance_premium(50000, insurance_lookup)
 
       # 可能因為級距問題，高薪不一定保費更高，但至少應該是非負整數
       expect(low_result).to be >= 0
@@ -55,14 +57,14 @@ RSpec.describe PayrollCalculator do
     end
 
     it '0 薪資時保險費為 0' do
-      result = PayrollCalculator.calculate_insurance_premium(0)
+      result = PayrollCalculator.calculate_insurance_premium(0, insurance_lookup)
       expect(result).to eq(0)
     end
 
     it '保險資料不存在時回傳 0' do
-      # 假設薪資超出所有級距範圍
-      allow(Insurance).to receive(:calculate_premium).and_return(nil)
-      result = PayrollCalculator.calculate_insurance_premium(999_999_999)
+      # 使用空的查詢表模擬保險資料不存在
+      empty_lookup = {}
+      result = PayrollCalculator.calculate_insurance_premium(999_999_999, empty_lookup)
       expect(result).to eq(0)
     end
   end
@@ -148,7 +150,8 @@ RSpec.describe PayrollCalculator do
       result = PayrollCalculator.calculate_all(
         base_salary: 40000,
         total_allowances: 5000,
-        total_deductions: 1000
+        total_deductions: 1000,
+        insurance_lookup: insurance_lookup
       )
 
       expect(result).to include(
@@ -166,7 +169,8 @@ RSpec.describe PayrollCalculator do
       result = PayrollCalculator.calculate_all(
         base_salary: 40000,
         total_allowances: 5000,
-        total_deductions: 1000
+        total_deductions: 1000,
+        insurance_lookup: insurance_lookup
       )
 
       expect(result.keys).to match_array([

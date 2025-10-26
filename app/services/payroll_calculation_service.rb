@@ -17,10 +17,12 @@
 class PayrollCalculationService
   class PayrollNotEditableError < StandardError; end
 
-  attr_reader :payroll
+  attr_reader :payroll, :insurance_lookup
 
   def initialize(payroll)
     @payroll = payroll
+    # 預先載入所有保險資料到記憶體，避免 N+1 查詢
+    @insurance_lookup = InsuranceCache.fetch_lookup_table
   end
 
   # 完整流程：計算並持久化（向後相容的 API）
@@ -69,7 +71,8 @@ class PayrollCalculationService
     PayrollCalculator.calculate_all(
       base_salary: employee.base_salary,
       total_allowances: employee.total_allowances,
-      total_deductions: employee.total_deductions
+      total_deductions: employee.total_deductions,
+      insurance_lookup: @insurance_lookup
     )
   end
 

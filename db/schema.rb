@@ -10,9 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_20_135016) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_26_092251) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+  enable_extension "pg_trgm"
 
   create_table "companies", force: :cascade do |t|
     t.string "name"
@@ -55,6 +56,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_20_135016) do
     t.datetime "updated_at", null: false
     t.index [ "company_id", "employee_id" ], name: "index_employees_on_company_id_and_employee_id", unique: true
     t.index [ "company_id" ], name: "index_employees_on_company_id"
+    t.index [ "name" ], name: "index_employees_on_name_trgm", opclass: :gin_trgm_ops, using: :gin
   end
 
   create_table "insurances", force: :cascade do |t|

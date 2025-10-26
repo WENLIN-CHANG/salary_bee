@@ -346,7 +346,8 @@ RSpec.describe PayrollCalculationService do
       expect(PayrollCalculator).to receive(:calculate_all).with(
         base_salary: 40000,
         total_allowances: 2000,
-        total_deductions: 500
+        total_deductions: 500,
+        insurance_lookup: kind_of(Hash)
       ).and_call_original
 
       service.calculate_for_employee_pure(employee)
@@ -380,7 +381,8 @@ RSpec.describe PayrollCalculationService do
       expect(PayrollCalculator).to receive(:calculate_all).with(
         base_salary: 40000,
         total_allowances: 2000,
-        total_deductions: 500
+        total_deductions: 500,
+        insurance_lookup: kind_of(Hash)
       ).and_call_original
 
       service.calculate_for_employee(employee)

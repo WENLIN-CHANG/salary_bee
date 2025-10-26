@@ -4,6 +4,7 @@ RSpec.describe 'Payroll Workflow Integration', type: :integration do
   # 測試完整的薪資計算流程：建立公司 → 新增員工 → 建立薪資批次 → 計算 → 確認
 
   let!(:company) { create(:company, name: "測試科技公司") }
+  let(:insurance_lookup) { InsuranceCache.fetch_lookup_table }
 
   let!(:employee1) do
     create(:employee,
@@ -149,8 +150,8 @@ RSpec.describe 'Payroll Workflow Integration', type: :integration do
         expect(item.total_insurance_premium).to be >= 0
         expect(item.total_insurance_premium).to be_a(Integer)
 
-        # 保險費應該從 Insurance model 計算
-        expected_insurance = PayrollCalculator.calculate_insurance_premium(item.base_salary)
+        # 保險費應該從 PayrollCalculator 計算（使用預載的 lookup table）
+        expected_insurance = PayrollCalculator.calculate_insurance_premium(item.base_salary, insurance_lookup)
         expect(item.total_insurance_premium).to eq(expected_insurance)
 
         # 實發薪資 = 應發 - 扣款 - 保險費
@@ -313,11 +314,12 @@ RSpec.describe 'Payroll Workflow Integration', type: :integration do
       PayrollCalculationService.new(payroll).call
 
       payroll.payroll_items.each do |item|
-        # 使用相同參數直接呼叫 calculator
+        # 使用相同參數直接呼叫 calculator（使用預載的 lookup table）
         result = PayrollCalculator.calculate_all(
           base_salary: item.base_salary,
           total_allowances: item.total_allowances,
-          total_deductions: item.total_deductions
+          total_deductions: item.total_deductions,
+          insurance_lookup: insurance_lookup
         )
 
         # 驗證結果完全一致

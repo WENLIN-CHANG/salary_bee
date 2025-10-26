@@ -7,9 +7,9 @@ class EmployeesController < ApplicationController
   def index
     @employees = @company.employees
 
-    # Search filter
+    # Search filter (使用 ilike 進行不區分大小寫搜尋)
     if params[:search].present?
-      @employees = @employees.where("name LIKE ?", "%#{params[:search]}%")
+      @employees = @employees.where("name ilike ?", "%#{params[:search]}%")
     end
 
     # Department filter
@@ -28,14 +28,16 @@ class EmployeesController < ApplicationController
     respond_to do |format|
       format.html
       format.csv do
-        csv_content = EmployeeExportService.new(@employees, :csv).call
+        # 預先載入公司資料避免 N+1 查詢
+        csv_content = EmployeeExportService.new(@employees.includes(:company), :csv).call
         send_data csv_content,
                   filename: "employees_#{Date.current}.csv",
                   type: "text/csv",
                   disposition: "attachment"
       end
       format.xlsx do
-        xlsx_content = EmployeeExportService.new(@employees, :xlsx).call
+        # 預先載入公司資料避免 N+1 查詢
+        xlsx_content = EmployeeExportService.new(@employees.includes(:company), :xlsx).call
         send_data xlsx_content,
                   filename: "employees_#{Date.current}.xlsx",
                   type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
