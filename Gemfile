@@ -46,7 +46,7 @@ group :development, :test do
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
   gem "rspec-rails", "~> 8.0"     # RSpec 測試框架
   gem "factory_bot", "~> 6.5"     # 測試資料產生器
-  gem "shoulda-matchers", "~> 6.0" # RSpec matchers for Rails validations
+  gem "shoulda-matchers", "~> 7.0" # RSpec matchers for Rails validations
   gem "rails-controller-testing"  # Controller 測試支援
   gem "capybara"                   # System 測試支援
   gem "brakeman", require: false  # 安全漏洞靜態分析
